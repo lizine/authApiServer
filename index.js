@@ -4,6 +4,10 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const app = express();
 const router = require('./router');
+const mongoose = require('mongoose');
+
+//Database setup
+mongoose.connect('mongodb://localhost:auth/auth');
 // App setup
 app.use(morgan('combined')); //middleware, morgan is a logging framework
 app.use(bodyParser.json({type: '*/*'})); //mw for parsing json

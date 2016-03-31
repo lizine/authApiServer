@@ -2,9 +2,16 @@ const jwt = require('jwt-simple');
 const config = require('../config');
 const User = require('../models/user');
 
+//create token for user based on her user id+secretn and add timestamp
 function tokenForUser(user){
   const timestamp = new Date().getTime();
   return jwt.encode({ sub: user.id, iat: timestamp }, config.secret);
+}
+
+//this gets called from router.js aftrer passport check
+exports.signin = function(req, res, next){
+  //user has authed their mail and pword, we just need to pass token
+  res.send({token : tokenForUser(req.user)}); //we get the user from req.user because passport
 }
 exports.signup = function(req, res, next){
   const email = req.body.email;

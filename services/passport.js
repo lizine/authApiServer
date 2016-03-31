@@ -7,7 +7,8 @@ const LocalStrategy = require('passport-local');
 
 //Create local strategy
 const localOptions = { usernameField : 'email' }; //expects uname, we use email so this is needed
-const localLogin = new LocalStrategy({ localOptions }, function(email, password, done){
+
+const localLogin = new LocalStrategy(localOptions, function(email, password, done){
   //verify email and pword, call done if correct
   User.findOne({ email : email }, function(err, user){
     if(err) { return done(err); }
@@ -15,13 +16,12 @@ const localLogin = new LocalStrategy({ localOptions }, function(email, password,
 
      //if user found, compare passwords and return false or if match: user.
     user.comparePassword(password, function(err, isMatch){
-      if(err) {return done(err);}
+      if(err) { return done(err); }
       if(!isMatch){ return done(null, false);}
 
-      return done(null,user);
+      return done(null,user); //passport assignes user to req.user so we can use it in authentication.js
     });
   });
-
 });
 //Setup options for JWT Strategy
 const jwtOptions = {
@@ -29,7 +29,7 @@ const jwtOptions = {
   secretOrKey : config.secret //we have to tell the secret to use to decode the token
 };
 
-//Create JWT Strategy
+//Create JWT Strategy (this is called in router.js when user tries to get /)
 const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done){ //payload is decoded jwtToken, done is callback
 
   User.findById(payload.sub, function(err, user){
